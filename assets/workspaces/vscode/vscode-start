@@ -1,0 +1,40 @@
+#!/usr/bin/bash
+#
+# VSCode start script for running VSCode in Domino
+# Location: /opt/domino/workspaces/vscode/start
+# This file should be executable by the Domino user account
+#
+# Copyright (C) 2024, Domino Data Lab, Inc.
+#
+
+SETTINGS_DIR="${HOME}/.vscode"
+SETTINGS_FILE="${SETTINGS_DIR}/settings.json"
+EXTENSIONS_DIR="${HOME}/.local/share/code-server/extensions"
+VSCODE_PORT="8888"
+PYTHON_PATH="$(which python)"
+
+# Add a user setting file if it doesn't exist
+if ! [ -f "$SETTINGS_FILE" ]; then
+    mkdir -p "$SETTINGS_DIR"
+    cat << EOF > "$SETTINGS_FILE"
+{
+    "extensions.autoUpdate":false,
+    "extensions.autoCheckUpdates": false,
+    "python.pythonPath": "$PYTHON_PATH",
+    "workbench.startupEditor": "none",
+    "workbench.colorTheme": "Default Dark+",
+    "python.defaultInterpreterPath": "$PYTHON_PATH"
+}
+EOF
+fi
+
+# Create extensions directory
+mkdir -p "$EXTENSIONS_DIR"
+
+# Run code-server
+code-server "$DOMINO_WORKING_DIR" \
+    --user-data-dir "$SETTINGS_DIR" \
+    --auth none \
+    --bind-addr "0.0.0.0:${VSCODE_PORT}" \
+    --extensions-dir "$EXTENSIONS_DIR" \
+    --disable-telemetry

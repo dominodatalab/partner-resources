@@ -1,0 +1,31 @@
+#!/usr/bin/bash
+#
+# Rstudio start script for running Rstudio in Domino
+# Location: /opt/domino/workspaces/rstudio/start
+# This file should be executable by the Domino user account
+#
+# Copyright (C) 2024, Domino Data Lab, Inc.
+#
+set -o nounset -o errexit -o pipefail
+
+RSTUDIO_PORT="8888"
+
+# Configure Spark if present
+if [ -n "${SPARK_HOME:-}" ]; then
+  echo ".libPaths(c(file.path(Sys.getenv('SPARK_HOME'), 'R', 'lib'), .libPaths()))" >> ~/.Rprofile
+fi
+
+# Set environment variable for where the history file will be stored
+export R_HISTFILE='domino.Rhistory'
+# Rstudio used to look at the $USER variable for default login
+export USER="$(id -un)"
+# Setup the RStudio envrionment
+printenv >> "${HOME}/.Renviron"
+
+# Set the working directory
+echo "session-default-working-dir=\"${DOMINO_WORKING_DIR}\"" >> /etc/rstudio/rsession.conf
+echo "server-user=${USER}" >> /etc/rstudio/rserver.conf
+echo "auth-none=1" >> /etc/rstudio/rserver.conf
+
+# Start RStudio
+/usr/lib/rstudio-server/bin/rserver --www-port="$RSTUDIO_PORT"
