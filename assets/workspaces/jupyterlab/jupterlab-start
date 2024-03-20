@@ -27,25 +27,25 @@ if ! [ -f "$CONF_FILE" ]; then
     # Create Jupyterlab configuration directory
     mkdir -p "$CONF_DIR"
     # Create Jupyterlab configuration file
-    cat <<- EOF > $CONF_FILE
-    # The proxy path inserted after the domain & port
-    c.ServerApp.base_url = '${PREFIX}'
-    # The path to the directory to be opened in the file browser by default prefixed by 'tree'
-    c.LabApp.default_url = '/lab/tree${DOMINO_WORKING_DIR:-$HOME}'
-    # The highest directory to be navigated by the file browser
-    c.ServerApp.root_dir = '/'
-    # The default cell execution timeout in nbconvert is 30 seconds, set it to a year
-    c.ExecutePreprocessor.timeout = 365*24*60*60
-    # Allow workspace to display in an iframe
-    c.ServerApp.tornado_settings = {'headers': {'Content-Security-Policy': 'frame-ancestors *'}, 'static_url_prefix': '${PREFIX}static/'}
-    # Disable CORS check to allow workspace proxy
-    c.ServerApp.disable_check_xsrf = True
-    # Disable login screen
-    c.IdentityProvider.token = u''
-    # Avoid IOPub data rate exceeded errors when visualizing large datasets (in bytes)
-    c.ZMQChannelsWebsocketConnection.iopub_data_rate_limit = 10000000000
+    cat << EOF > "$CONF_FILE"
+# The proxy path inserted after the domain & port
+c.ServerApp.base_url = '${PREFIX}'
+# The path to the directory to be opened in the file browser by default prefixed by 'tree'
+c.LabApp.default_url = '/lab/tree${DOMINO_WORKING_DIR:-$HOME}'
+# The highest directory to be navigated by the file browser
+c.ServerApp.root_dir = '/'
+# The default cell execution timeout in nbconvert is 30 seconds, set it to a year
+c.ExecutePreprocessor.timeout = 365*24*60*60
+# Allow workspace to display in an iframe
+c.ServerApp.tornado_settings = {'headers': {'Content-Security-Policy': 'frame-ancestors *'}, 'static_url_prefix': '${PREFIX}static/'}
+# Disable CORS check to allow workspace proxy
+c.ServerApp.disable_check_xsrf = True
+# Disable login screen
+c.IdentityProvider.token = u''
+# Avoid IOPub data rate exceeded errors when visualizing large datasets (in bytes)
+c.ZMQChannelsWebsocketConnection.iopub_data_rate_limit = 10000000000
 EOF
 fi
 
 # Start Jupyterlab
-jupyter-lab --config="$CONF_FILE" --no-browser --ip="0.0.0.0" --port="$JUPYTERLAB_PORT"
+jupyter-lab --config="$CONF_FILE" --no-browser --ip="0.0.0.0" --port="$JUPYTERLAB_PORT" 2>&1
